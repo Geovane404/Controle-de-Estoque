@@ -31,8 +31,8 @@ public class CategoryController {
 	@GetMapping(value = "/paged")
 	public ResponseEntity<Page<CategoryDTO>> findAllPaged(Pageable pageable) {
 		
-		Page<CategoryDTO> pagelist = service.findALLPaged(pageable);
-		return ResponseEntity.ok().body(pagelist);
+		Page<CategoryDTO> page = service.findALLPaged(pageable);
+		return ResponseEntity.ok().body(page);
 	}
 	
 	@GetMapping(value = "/{id}")

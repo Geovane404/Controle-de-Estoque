@@ -1,6 +1,7 @@
 package com.gtecnologia.GTcontrole.services;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.gtecnologia.GTcontrole.dto.CategoryDTO;
 import com.gtecnologia.GTcontrole.entities.Category;
 import com.gtecnologia.GTcontrole.repositories.CategoryRepository;
+import com.gtecnologia.GTcontrole.services.exception.ResourceNotFoundException;
 
 @Service
 public class CategoryService {
@@ -29,14 +31,16 @@ public class CategoryService {
 	@Transactional(readOnly = true)
 	public Page<CategoryDTO> findALLPaged(Pageable pageable) {
 		
-		Page<Category>pagelist = repository.findAll(pageable);
-		return pagelist.map(x -> new CategoryDTO(x));
+		Page<Category>page = repository.findAll(pageable);
+		return page.map(x -> new CategoryDTO(x));
 	}
 
 	@Transactional(readOnly = true)
 	public CategoryDTO findById(Long id) {
 		
-		Category entity = repository.findById(id).get();
+		Optional<Category> obj = repository.findById(id);
+		
+		Category entity = obj.orElseThrow(() -> new ResourceNotFoundException("Id não encontrado!"));
 		return new CategoryDTO(entity);
 	}
 }
