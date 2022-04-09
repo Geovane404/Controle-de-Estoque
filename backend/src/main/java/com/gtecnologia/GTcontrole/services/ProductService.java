@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import javax.persistence.EntityNotFoundException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -60,6 +62,19 @@ public class ProductService {
 		return new ProductDTO(entity);
 	}
 
+	@Transactional
+	public ProductDTO update(Long id, ProductDTO dto) {
+		try {
+			Product entity = repository.getOne(id);
+			copyDtoToEntity(dto, entity);
+			entity = repository.save(entity);
+			
+			return new ProductDTO(entity);
+		}
+		catch(EntityNotFoundException e) {
+			throw new ResourceNotFoundException("Id não encontrado!");
+		}
+	}
 	
 	//-----------METODOS AUXILIARES------------------------------//
 	private void copyDtoToEntity(ProductDTO dto, Product entity) {
@@ -78,5 +93,4 @@ public class ProductService {
 			entity.getCategories().add(category);
 		}
 	}
-
 }
