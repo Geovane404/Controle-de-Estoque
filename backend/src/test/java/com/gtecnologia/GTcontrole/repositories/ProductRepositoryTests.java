@@ -9,8 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
 import com.gtecnologia.GTcontrole.entities.Product;
-
-
+import com.gtecnologia.GTcontrole.factory.Factory;
 
 //TESTES||COMPONENTES RELACIONADOS AO SPRING DATA JPA||VALIDAR METODOS DO MEU REPOSITÓRIO:
 @DataJpaTest
@@ -19,16 +18,16 @@ public class ProductRepositoryTests {
 	@Autowired
 	private ProductRepository repository;
 
-	
 	private long exintingId;
 	private long nonExistingId;
+	private long countTotalProduct;
 
-	//FIXTURES
+	// FIXTURES
 	@BeforeEach
 	void setUp() throws Exception {
 		exintingId = 1L;
 		nonExistingId = 1000L;
-	
+		countTotalProduct = 25L;
 	}
 
 	//---TESTE PARA VALIDAR BUSCAS:
@@ -39,7 +38,7 @@ public class ProductRepositoryTests {
 
 		Assertions.assertTrue(result.isPresent());
 	}
-	
+
 	@Test
 	public void findByIdShouldReturnOptionalNullWhenIdNoExist() {
 
@@ -47,6 +46,18 @@ public class ProductRepositoryTests {
 
 		Assertions.assertFalse(result.isPresent());
 		Assertions.assertTrue(result.isEmpty());
+	}
+
+	//---TESTES PARA VALIDAR INSERÇÃO E ATUALIZAÇÃO( save ):
+	@Test
+	public void saveShouldPersistWithAutoIncrementWhenIdIsNull() {
+
+		Product product = Factory.createProduct();
+		product.setId(null);
+		product = repository.save(product);
+
+		Assertions.assertNotNull(product.getId());
+		Assertions.assertEquals(countTotalProduct + 1, product.getId());
 	}
 
 }
