@@ -7,6 +7,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.dao.EmptyResultDataAccessException;
 
 import com.gtecnologia.GTcontrole.entities.Product;
 import com.gtecnologia.GTcontrole.factory.Factory;
@@ -59,5 +60,23 @@ public class ProductRepositoryTests {
 		Assertions.assertNotNull(product.getId());
 		Assertions.assertEquals(countTotalProduct + 1, product.getId());
 	}
-
+	
+	//---TESTE PARA VALIDAR DELEÇÃO:
+	@Test
+	public void deleteShouldDeleteObjectWhenIdExists() {
+		
+		repository.deleteById(exintingId);
+		Optional<Product> result = repository.findById(exintingId);
+		
+		Assertions.assertTrue(result.isEmpty());
+		Assertions.assertFalse(result.isPresent());
+	}
+	
+	@Test
+	public void deleteShouldThrowEmptyResultDataAccesExceptionWhenIdDoesNotExist() {
+		
+		Assertions.assertThrows(EmptyResultDataAccessException.class, () -> {
+			repository.deleteById(nonExistingId);
+		});
+	}
 }
