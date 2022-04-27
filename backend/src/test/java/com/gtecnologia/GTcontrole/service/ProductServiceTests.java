@@ -1,17 +1,14 @@
 package com.gtecnologia.GTcontrole.service;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import com.gtecnologia.GTcontrole.entities.Product;
-import com.gtecnologia.GTcontrole.repositories.CategoryRepository;
 import com.gtecnologia.GTcontrole.repositories.ProductRepository;
 import com.gtecnologia.GTcontrole.services.ProductService;
 
@@ -25,19 +22,36 @@ public class ProductServiceTests {
 	@Mock
 	private ProductRepository repository;
 
-	@Mock
-	private CategoryRepository categoryRepository;
-
-	private PageImpl<Product> page;
-
+	
+	private long existingId;
+	
 	// FIXTURES
 	@BeforeEach
 	void setUp() throws Exception {
 		
-		Mockito.when(repository.findAll((Pageable) ArgumentMatchers.any())).thenReturn(page);
+		existingId = 1L;
+		
+		
+		// 2°-VOID => ação -- quando (Comportamento simulado do Repository)
+		Mockito.doNothing().when(repository).deleteById(existingId);
 		
 	}
+	
 	//---TESTES PARA VALIDAR BUSCAS:
 	
-
+	
+	// ---TESTES PARA VALIDAR INSERÇÕES E ATUALIZAÇÕES:
+	
+	
+	// ---TESTES PARA VALIDAR DELEÇÕES:
+	@Test
+	public void deleteShouldDoNothingWhenIdexist() {
+		
+		Assertions.assertDoesNotThrow(() -> {
+			service.delete(existingId);
+		});
+		
+		Mockito.verify(repository, Mockito.times(1)).deleteById(existingId);
+	}
+	
 }
